@@ -5,6 +5,13 @@ description: Find compelling moments in a video — funny dialogue OR repeated i
 
 # Clipify
 
+> **Norge Ufiltrert / Grok Bot setup (added by norgeufiltrert):**
+> - Language: most of our videos are Norwegian. Run Whisper with `--model small` (or `medium` for noisy audio) and **no `--language` flag** so it auto-detects; use `--language no` when you know the clip is Norwegian. The `.en` models only understand English.
+> - Computer: `-hwaccel videotoolbox` and `h264_videotoolbox` only work on a Mac. On Linux (e.g. Grok Bot's cloud computer) drop `-hwaccel videotoolbox` and encode with `-c:v libx264`.
+> - Install once: `ffmpeg`, `pip install -U openai-whisper` (on a Mac: `brew install ffmpeg`).
+> - We normally clip podcasts with AutoClip. Use clipify mainly in **action mode** for footage without talking (vehicles, sports, product shots).
+
+
 Find compelling moments in a video, cut them as standalone clips, optionally reformat 16:9 → 9:16 (face-pan or split-screen), time-warp pans for tighter reveals, and burn opus-style word-by-word captions.
 
 ## Modes
@@ -46,7 +53,7 @@ Working dir: `/tmp/clipify/` (mkdir at start, leave artifacts for debugging).
 ```bash
 mkdir -p /tmp/clipify
 ffmpeg -y -hwaccel videotoolbox -i "$VIDEO" -vn -ac 1 -ar 16000 /tmp/clipify/audio.wav
-whisper /tmp/clipify/audio.wav --model tiny.en --word_timestamps True --output_format json --output_dir /tmp/clipify --language en
+whisper /tmp/clipify/audio.wav --model small --word_timestamps True --output_format json --output_dir /tmp/clipify
 ```
 
 Read the resulting JSON (or `.txt`) and pick 3–5 candidate clips. Funny signals to scan for:
@@ -211,7 +218,7 @@ Else use the preset:
 
 ```bash
 # Re-run whisper on the trimmed clip for accurate timestamps relative to clip start
-whisper /tmp/clipify/clip_panned.mp4 --model tiny.en --word_timestamps True --output_format json --output_dir /tmp/clipify --language en
+whisper /tmp/clipify/clip_panned.mp4 --model small --word_timestamps True --output_format json --output_dir /tmp/clipify
 python3 <skill-dir>/scripts/build_ass.py /tmp/clipify/clip_panned.json /tmp/clipify/captions.ass opus
 ```
 
